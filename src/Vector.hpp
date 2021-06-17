@@ -19,8 +19,10 @@ class Vec3
         auto operator=(Vec3&& rhs) -> Vec3& = default;
     
         auto operator==(const Vec3& rhs) const -> bool;
-        auto operator+=(const Point& rhs) -> Vec3&;
-        auto operator+(const Point& rhs) const -> Vec3;
+        auto operator+=(const Vec3& rhs) -> Vec3&;
+        auto operator+(const Vec3& rhs) const -> Vec3;
+        auto operator+=(const Point& rhs) const -> Point;
+        auto operator+(const Point& rhs) const -> Point;
         auto operator-=(const Vec3& rhs) -> Vec3&;
         auto operator-(const Vec3& rhs) const -> Vec3;
         auto operator-() -> Vec3;

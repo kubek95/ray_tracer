@@ -25,6 +25,16 @@ auto Point::relativelyEqual(float a, float b, float maxRelativeDiff) const -> bo
     return diff <= scaledEps;
 }
 
+auto Point::operator+=(const Vec3& rhs) const -> Vec3
+{
+    return Vec3{x()+rhs.x(), y()+rhs.y(), z()+rhs.z()};
+}
+
+auto Point::operator+(const Vec3& rhs) const -> Vec3
+{
+    return Point{*this} += rhs;
+}
+
 auto Point::operator-(const Point& rhs) -> Vec3
 {
     const auto x = _coordinates[0] - rhs.x();
@@ -33,13 +43,19 @@ auto Point::operator-(const Point& rhs) -> Vec3
     return Vec3{x, y, z};
 }
 
-auto Point::operator-(const Vec3& rhs) -> Point&
+auto Point::operator-=(const Vec3& rhs) -> Point&
 {
     _coordinates[0] -= rhs.x();
     _coordinates[1] -= rhs.y();
     _coordinates[2] -= rhs.z();
     return *this;
 }
+
+auto Point::operator-(const Vec3& rhs) -> Point
+{
+    return Point{*this} -= rhs;
+}
+
 auto Point::x() const -> const float&
 {
     return _coordinates[0];

@@ -27,7 +27,7 @@ auto Vec3::operator==(const Vec3& rhs) const -> bool
            relativelyEqual(z(), rhs.z());
 }
 
-auto Vec3::operator+=(const Point& rhs) -> Vec3&
+auto Vec3::operator+=(const Vec3& rhs) -> Vec3&
 {
     _coordinates[0] += rhs.x();
     _coordinates[1] += rhs.y();
@@ -35,7 +35,17 @@ auto Vec3::operator+=(const Point& rhs) -> Vec3&
     return *this;
 }
 
-auto Vec3::operator+(const Point& rhs) const -> Vec3
+auto Vec3::operator+(const Vec3& rhs) const -> Vec3
+{
+    return Vec3{*this} += rhs;
+}
+
+auto Vec3::operator+=(const Point& rhs) const -> Point
+{
+    return Point{x()+rhs.x(), y()+rhs.y(), z()+rhs.z()};
+}
+
+auto Vec3::operator+(const Point& rhs) const -> Point
 {
     return Vec3{*this} += rhs;
 }

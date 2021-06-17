@@ -16,6 +16,16 @@ TEST(Point, copy_should_be_the_same_as_original)
     ASSERT_EQ(p2.z(), p3.z());
 }
 
+TEST(Point, should_produce_vector_after_addition_with_vector)
+{
+    Vec3 v1{3.f, -2.f, 5.f};
+    Point p1{-2.f, 3.f, 1.f};
+    v1 = p1+v1;
+    ASSERT_EQ(v1.x(), 1.f);
+    ASSERT_EQ(v1.y(), 1.f);
+    ASSERT_EQ(v1.z(), 6.f);
+}
+
 TEST(Point, subtraction_should_produce_vector)
 {
     Point p1{3.f, 2.f, 1.f};
@@ -32,6 +42,7 @@ TEST(Point, comparison_should_work_with_given_precision)
     Point p2{1.f, 2.f+sufficientPrecision, 3.f};
     ASSERT_FALSE(p1 == p2);
 }
+
 TEST(Point, subtraction_of_a_vector_from_a_point_should_produce_a_point)
 {
     Point p1{3.f, 2.f, 1.f};
