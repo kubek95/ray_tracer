@@ -41,10 +41,6 @@ class Vec3
         auto z() const -> const float&;
 
     private:
-        auto relativelyEqual(float a,
-                             float b,
-                             float maxRelativeDiff =
-                                 std::numeric_limits<float>::epsilon()) const -> bool;
         std::array<float, 4> _coordinates;
 };
 

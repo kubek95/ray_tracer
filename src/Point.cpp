@@ -1,5 +1,6 @@
 #include "Point.hpp"
 #include "Vector.hpp"
+#include "Utilities.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -14,15 +15,6 @@ auto Point::operator==(const Point& rhs) const -> bool
     return relativelyEqual(x(), rhs.x()) &&
            relativelyEqual(y(), rhs.y()) &&
            relativelyEqual(z(), rhs.z());
-}
-
-auto Point::relativelyEqual(float a, float b, float maxRelativeDiff) const -> bool
-{
-    const auto diff = std::abs(a-b);
-    a = std::abs(a);
-    b = std::abs(b);
-    const auto scaledEps = maxRelativeDiff*std::max(a,b);
-    return diff <= scaledEps;
 }
 
 auto Point::operator+=(const Vec3& rhs) const -> Vec3

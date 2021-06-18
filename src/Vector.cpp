@@ -1,5 +1,6 @@
 #include "Point.hpp"
 #include "Vector.hpp"
+#include "Utilities.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -7,17 +8,6 @@
 Vec3::Vec3(float x, float y, float z) :
     _coordinates{x, y, z, 0}
 {
-}
-
-auto Vec3::relativelyEqual(float a,
-                           float b,
-                           float maxRelativeDiff) const -> bool
-{
-    const auto diff = std::abs(a - b);
-    a = std::abs(a);
-    b = std::abs(b);
-    const auto scaledEps = maxRelativeDiff * std::max(a, b);
-    return diff <= scaledEps;
 }
 
 auto Vec3::operator==(const Vec3& rhs) const -> bool
@@ -97,7 +87,7 @@ auto Vec3::operator/(float scalar) -> Vec3
 
 auto Vec3::magnitude() const -> float
 {
-    return std::sqrt(std::pow(x(), 2) + std::pow(y(), 2) + std::pow(z(), 2));
+    return std::sqrt(std::pow(x(), 2.f) + std::pow(y(), 2.f) + std::pow(z(), 2.f));
 }
 
 auto Vec3::normalize() -> Vec3&
