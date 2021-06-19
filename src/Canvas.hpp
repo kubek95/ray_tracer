@@ -29,7 +29,8 @@ class Canvas
         auto writePpmHeader(std::ofstream& file) const -> void;
         auto writePpmContent(std::ofstream& file) const -> void;
         auto scaleColor(float color) const -> int;
-        auto writePixelToFile(std::ofstream& file, const Color& pixel, std::uint8_t& lineLength) const -> void;
+        auto writePixelToFile(std::ostringstream& file, const Color& pixel) const -> void;
+        auto splitLineIfNeeded(std::ostringstream& line) const -> void;
 
         const std::size_t _width;
         const std::size_t _height;

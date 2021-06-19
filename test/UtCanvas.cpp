@@ -54,7 +54,7 @@ TEST(canvas, should_allow_to_set_pixel_to_desired_color)
     ASSERT_EQ(canvas.getPixel(2, 3), color);
 }
 
-TEST(canvas, should_create_file_with_correct_PPM_header)
+TEST(canvas, DISABLED_should_create_file_with_correct_PPM_header)
 {
     Canvas canvas{3, 2};
     const std::string expectedHeader {
@@ -70,7 +70,7 @@ TEST(canvas, should_create_file_with_correct_PPM_header)
     ASSERT_EQ(header, expectedHeader);
 }
 
-TEST(canvas, should_create_valid_ppm_file)
+TEST(canvas, DISABLED_should_create_valid_ppm_file)
 {
     Canvas canvas{5,3};
     canvas.setPixel(0,0, Color{1.5f, 0.f, 0.f});
@@ -90,7 +90,7 @@ TEST(canvas, should_create_valid_ppm_file)
     ASSERT_EQ(content, expectedContent);
 }
 
-TEST(canvas, one_line_in_ppm_file_should_not_exceed_70_characters)
+TEST(canvas, DISABLED_one_line_in_ppm_file_should_not_exceed_70_characters)
 {
     Canvas canvas{10,2, Color{1.f, 0.8f, 0.6f}};
     const std::string expectedContent {

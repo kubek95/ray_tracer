@@ -1,7 +1,7 @@
 #include "Canvas.hpp"
 #include "Color.hpp"
 
-#include <exception>
+#include <stdexcept>
 #include <fstream>
 #include <algorithm>
 #include <cmath>
@@ -59,35 +59,38 @@ auto Canvas::scaleColor(float color) const -> int
     }
 }
 
-auto Canvas::writePixelToFile(std::ofstream& file, const Color& pixel, std::uint8_t& lineLength) const -> void
+auto Canvas::writePixelToFile(std::ostringstream& ss, const Color& pixel) const -> void
 {
-    std::ostringstream ss;
     ss << scaleColor(pixel.r()) << " ";
     ss << scaleColor(pixel.g()) << " ";
-    ss << scaleColor(pixel.b());
-    if (lineLength+ss.str().size() > 70) {
-//        file << '\n';
-        lineLength = 0;
-    }
- //   lineLength += ss.str().size();
-    file << ss.str();
+    ss << scaleColor(pixel.b()) << " ";
 }
 
+auto Canvas::splitLineIfNeeded(std::ostringstream& line) const -> void
+{
+    if (line.str().size() <= 70) {
+        return;
+    }
+    auto tmp = line.str();
+}
+
+//TODO: remove trailing spaces and add spliting line to max 70 characters
 auto Canvas::writePpmContent(std::ofstream& file) const -> void
 {
-    std::uint8_t lineLength{0};
-    std::size_t widthCounter{0};
+    std::size_t lineNumberCount{0};
+    std::ostringstream line;
     for(const auto& pixel: _canvas) {
-        if (widthCounter == _width-1) {
-            widthCounter = 0;
-            writePixelToFile(file, pixel, lineLength);
-            file << '\n';
-            lineLength = 0;
+        if (lineNumberCount ==_width-1) {
+            lineNumberCount = 0;
+            writePixelToFile(line, pixel);
+            line << '\n';
+            splitLineIfNeeded(line);
+            file << line.str();
+            line.str("");
             continue;
         }
-        ++widthCounter;
-        writePixelToFile(file, pixel, lineLength);
-        file << " ";
+        ++lineNumberCount;
+        writePixelToFile(line, pixel);
     }
 }
 
