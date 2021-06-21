@@ -15,8 +15,8 @@ TEST(vector, should_correctly_check_equality)
 TEST(vector, should_produce_point_after_addition_with_point)
 {
     Vec3 v1{3.f, -2.f, 5.f};
-    Point p1{-2.f, 3.f, 1.f};
-    Point expected_result{1.f, 1.f, 6.f};
+    Point3 p1{-2.f, 3.f, 1.f};
+    Point3 expected_result{1.f, 1.f, 6.f};
     ASSERT_EQ(v1+p1, expected_result);
 }
 
@@ -54,12 +54,17 @@ TEST(vector, should_support_division_by_scalar)
 TEST(vector, should_support_magnitude_quantification)
 {
     float expected_magnitude{1.f};
-    ASSERT_EQ(Vec3(1.f,0.f,0.f).magnitude(), expected_magnitude);
-    ASSERT_EQ(Vec3(0.f,1.f,0.f).magnitude(), expected_magnitude);
-    ASSERT_EQ(Vec3(0.f,0.f,1.f).magnitude(), expected_magnitude);
+    Vec3 v1{1.f,0.f,0.f};
+    Vec3 v2{0.f,1.f,0.f};
+    Vec3 v3{0.f,0.f,1.f};
+    ASSERT_EQ(v1.magnitude(), expected_magnitude);
+    ASSERT_EQ(v2.magnitude(), expected_magnitude);
+    ASSERT_EQ(v3.magnitude(), expected_magnitude);
     expected_magnitude = std::sqrt(14.f);
-    ASSERT_EQ(Vec3(1.f,2.f,3.f).magnitude(), expected_magnitude);
-    ASSERT_EQ(Vec3(-1.f,-2.f,-3.f).magnitude(), expected_magnitude);
+    Vec3 v4{1.f,2.f,3.f};
+    Vec3 v5{-1.f,-2.f,-3.f};
+    ASSERT_EQ(v4.magnitude(), expected_magnitude);
+    ASSERT_EQ(v5.magnitude(), expected_magnitude);
 }
 
 TEST(vector, should_support_normalization)
