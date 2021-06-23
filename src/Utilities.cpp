@@ -1,7 +1,5 @@
 #include "Utilities.hpp"
 
-#include <cmath>
-
 auto relativelyEqual(float a,
                      float b,
                      float maxRelativeDiff) -> bool

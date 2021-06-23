@@ -30,7 +30,6 @@ class Vector
         auto operator==(const Vector<size>& rhs) const -> bool;
         auto operator+=(const Vector<size>& rhs) -> Vector<size>&;
         auto operator+(const Vector<size>& rhs) const -> Vector<size>;
-        auto operator+=(const Point<size>& rhs) const -> Point<size>;
         auto operator+(const Point<size>& rhs) const -> Point<size>;
         auto operator-=(const Vector<size>& rhs) -> Vector<size>&;
         auto operator-(const Vector<size>& rhs) const -> Vector<size>;
@@ -92,19 +91,13 @@ auto Vector<size>::operator+(const Vector<size>& rhs) const -> Vector<size>
 }
 
 template<std::size_t size>
-auto Vector<size>::operator+=(const Point<size>& rhs) const -> Point<size>
+auto Vector<size>::operator+(const Point<size>& rhs) const -> Point<size>
 {
     Point<size> tmp;
     for(std::size_t i{0}; i < size; ++i) {
         tmp.at(i) = at(i)+rhs.at(i);
     }
     return tmp;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator+(const Point<size>& rhs) const -> Point<size>
-{
-    return Vector<size>{*this} += rhs;
 }
 
 template<std::size_t size>
