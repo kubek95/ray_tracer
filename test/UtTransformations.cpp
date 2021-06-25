@@ -103,3 +103,21 @@ TEST(transformations, shearing)
     expectedResult = Point4{2.f, 3.f, 7.f, 1.f};
     ASSERT_EQ(transform*p, expectedResult);
 }
+
+TEST(transformations, transformations_stacking)
+{
+    auto p = Point4{1.f, 0.f, 1.f, 1.f};
+    auto rot_mat = rotation_x(mathConst::pi/2.f);
+    auto scal_mat = scaling(5.f, 5.f, 5.f);
+    auto transl_mat = translation(10.f, 5.f, 7.f);
+
+    auto exp_result = rot_mat*p;
+    exp_result = scal_mat*exp_result;
+    exp_result = transl_mat*exp_result;
+
+    auto result = TransformationStacker().rotate_x(mathConst::pi/2.f)
+                                         .scale(5.f, 5.f, 5.f)
+                                         .translate(10.f, 5.f, 7.f)
+                                         .getMatrix();
+    ASSERT_EQ(result*p, exp_result);
+}

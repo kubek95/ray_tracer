@@ -60,3 +60,43 @@ auto shearing(float x_y,float x_z,float y_x,float y_z,float z_x,float z_y) -> Ma
     temp.at(2,1) = z_y;
     return temp;
 }
+
+auto TransformationStacker::translate(float x, float y, float z) -> TransformationStacker&
+{
+    _matrix = translation(x,y,z)*_matrix;
+    return *this;
+}
+
+auto TransformationStacker::scale(float x, float y, float z) -> TransformationStacker&
+{
+    _matrix = scaling(x, y, z)*_matrix;
+    return *this;
+}
+
+auto TransformationStacker::rotate_x(float rad) -> TransformationStacker&
+{
+    _matrix = rotation_x(rad)*_matrix;
+    return *this;
+}
+auto TransformationStacker::rotate_y(float rad) -> TransformationStacker&
+{
+    _matrix = rotation_y(rad)*_matrix;
+    return *this;
+}
+auto TransformationStacker::rotate_z(float rad) -> TransformationStacker&
+{
+    _matrix = rotation_z(rad)*_matrix;
+    return *this;
+}
+
+auto TransformationStacker::shear(float x_y,float x_z,float y_x,float y_z,float z_x,float z_y) -> TransformationStacker&
+{
+    _matrix = shearing(x_y, x_z, y_x, y_z, z_x, z_y);
+    return *this;
+}
+
+auto TransformationStacker::getMatrix() -> Mat4
+{
+    return _matrix;
+}
+
