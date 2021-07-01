@@ -38,6 +38,7 @@ class Matrix
 
         template<std::size_t mat_size>
         friend auto operator<<(std::ostream&, const Matrix<mat_size>&) -> std::ostream&;
+
     private:
         auto indexToCoord(std::size_t index) const -> std::pair<std::size_t, std::size_t>;
         auto coordToIndex(std::size_t row, std::size_t column) const -> std::size_t;
@@ -72,7 +73,7 @@ Matrix<size>::Matrix(std::initializer_list<float> list)
     if (size > 4) {
         throw std::runtime_error("Matrices with size above 4 are not supported");
     }
-    std::memcpy(_matrix.data(), std::data(list), list.size()*sizeof(float));
+    std::copy(list.begin(), list.end(), _matrix.begin());
 }
 
 template<std::size_t size>
@@ -116,7 +117,7 @@ auto Matrix<size>::operator*=(const Matrix<size>& rhs) -> Matrix<size>&
             }
         }
     }
-    std::memcpy(_matrix.data(), tmp.data(), size*size*sizeof(float));
+    std::copy(tmp.begin(), tmp.end(), _matrix.begin());
     return *this;
 }
 
@@ -191,7 +192,7 @@ auto Matrix<size>::transpose() -> Matrix<size>&
 template<std::size_t size>
 auto Matrix<size>::determinant() const -> float
 {
-    float determinant{};
+    auto determinant{0.f};
     for(std::size_t column{0}; column < size; ++column) {
         determinant += at(0, column) * cofactor(0, column);
     }
@@ -218,12 +219,6 @@ auto Matrix<size>::submatrix(std::size_t rowToDelete, std::size_t columnToDelete
         }
     }
     return temp;
-}
-
-template<>
-inline auto Matrix<2>::submatrix(std::size_t row, std::size_t column) const -> Matrix<1>
-{
-    return Mat1{at(1-row, 1-column)};
 }
 
 template<std::size_t size>

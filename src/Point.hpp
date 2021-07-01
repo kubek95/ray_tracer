@@ -30,6 +30,7 @@ class Point
 
         template<std::size_t p_size>
         friend auto operator<<(std::ostream& ost, const Point<p_size>& p) -> std::ostream&;
+
     private:
         std::array<float, size> _coordinates{};
 };

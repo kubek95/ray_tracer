@@ -17,9 +17,8 @@ auto Sphere::intersect(const Ray& ray) const -> std::vector<float>
     if (discriminant < 0) {
         return {};
     }
-    std::vector<float> tmp{(-b-std::sqrt(discriminant))/2.f*a,
-                           (-b+std::sqrt(discriminant))/2.f*a};
-    return tmp;
+    return {(-b-std::sqrt(discriminant))/2.f*a,
+            (-b+std::sqrt(discriminant))/2.f*a};
 }
 
 auto Sphere::id() const -> std::size_t

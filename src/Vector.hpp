@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <numeric>
 #include <ostream>
 #include <limits>
 #include <initializer_list>
@@ -113,18 +114,17 @@ template<std::size_t size>
 auto Vector<size>::operator-() -> Vector<size>
 {
     Vector<size> tmp{*this};
-    for (std::size_t i{0}; i < size; ++i) {
-        tmp._coordinates[i] = -_coordinates[i];
-    }
+    std::for_each(tmp._coordinates.begin(),
+                  tmp._coordinates.end(),
+                  [](auto& el){ el=-el; });
     return tmp;
 }
 
 template<std::size_t size>
 auto Vector<size>::operator*=(float scalar) -> Vector<size>&
 {
-    for (std::size_t i{0}; i < size; ++i) {
-        _coordinates[i] *= scalar;
-    }
+    std::for_each(_coordinates.begin(), _coordinates.end(),
+                  [scalar](auto& el){ el*=scalar; });
     return *this;
 }
 
@@ -149,10 +149,12 @@ auto Vector<size>::operator/(float scalar) const -> Vector<size>
 template<std::size_t size>
 auto Vector<size>::magnitude() const -> float
 {
-    float sumOfSquares{};
-    for (std::size_t i{0}; i < size; ++i) {
-        sumOfSquares += std::pow(at(i), 2.f);
-    }
+    const auto& sumSquares = [](const auto& acc, const auto& val)
+                             {return acc+std::pow(val, 2.f);};
+    auto sumOfSquares = std::accumulate(_coordinates.begin(),
+                                        _coordinates.end(),
+                                        0.f,
+                                        sumSquares);
     return std::sqrt(sumOfSquares);
 }
 
@@ -160,9 +162,8 @@ template<std::size_t size>
 auto Vector<size>::normalize() -> Vector<size>&
 {
     const auto mag = magnitude();
-    for (std::size_t i{0}; i < size; ++i) {
-        _coordinates[i] /= mag;
-    }
+    std::for_each(_coordinates.begin(), _coordinates.end(),
+                  [mag](auto& el){el/=mag;});
     return *this;
 }
 
@@ -184,9 +185,9 @@ auto Vector<size>::cross(const Vector<size>& rhs) -> Vector<size>&
         throw std::runtime_error("implementation does not support cross product"
                                  "for vectors with size different than 3");
     }
-    const float x{this->at(0)};
-    const float y{this->at(1)};
-    const float z{this->at(2)};
+    const auto x{this->at(0)};
+    const auto y{this->at(1)};
+    const auto z{this->at(2)};
     _coordinates[0] = y*rhs.at(2) - z*rhs.at(1);
     _coordinates[1] = z*rhs.at(0) - x*rhs.at(2);
     _coordinates[2] = x*rhs.at(1) - y*rhs.at(0);
