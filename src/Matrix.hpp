@@ -17,12 +17,6 @@ class Matrix
     public:
         Matrix<size>() = default;
         Matrix<size>(std::initializer_list<float> list);
-        ~Matrix<size>() = default;
-
-        Matrix<size>(const Matrix<size>&) = default;
-        auto operator=(const Matrix<size>&) -> Matrix<size>& = default;
-        Matrix<size>(Matrix<size>&&) = default;
-        auto operator=(Matrix<size>&&) -> Matrix<size>& = default;
 
         auto operator==(const Matrix<size>& rhs) const -> bool;
         auto operator!=(const Matrix<size>& rhs) const -> bool;
@@ -47,6 +41,7 @@ class Matrix
     private:
         auto indexToCoord(std::size_t index) const -> std::pair<std::size_t, std::size_t>;
         auto coordToIndex(std::size_t row, std::size_t column) const -> std::size_t;
+
         std::array<float, size*size> _matrix{};
 };
 
@@ -196,7 +191,7 @@ auto Matrix<size>::transpose() -> Matrix<size>&
 template<std::size_t size>
 auto Matrix<size>::determinant() const -> float
 {
-    float determinant;
+    float determinant{};
     for(std::size_t column{0}; column < size; ++column) {
         determinant += at(0, column) * cofactor(0, column);
     }

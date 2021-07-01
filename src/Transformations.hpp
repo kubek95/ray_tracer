@@ -20,5 +20,5 @@ class TransformationStacker
         auto shear(float x_y,float x_z,float y_x,float y_z,float z_x,float z_y) -> TransformationStacker&;
         auto getMatrix() -> Mat4;
     private:
-        Mat4 _matrix = matrix::identity4;
+        Mat4 _matrix{matrix::identity4};
 };

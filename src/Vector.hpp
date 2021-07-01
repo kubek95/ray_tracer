@@ -19,13 +19,7 @@ class Vector
 {
     public:
         Vector<size>() = default;
-        explicit Vector<size>(std::initializer_list<float> values);
-        ~Vector<size>() = default;
-    
-        Vector<size>(const Vector<size>& vector) = default;
-        auto operator=(const Vector<size>& rhs) -> Vector<size>& = default;
-        Vector<size>(Vector<size>&& vector) = default;
-        auto operator=(Vector<size>&& rhs) -> Vector<size>& = default;
+        Vector<size>(std::initializer_list<float> values);
     
         auto operator==(const Vector<size>& rhs) const -> bool;
         auto operator+=(const Vector<size>& rhs) -> Vector<size>&;
@@ -35,9 +29,9 @@ class Vector
         auto operator-(const Vector<size>& rhs) const -> Vector<size>;
         auto operator-() -> Vector<size>;
         auto operator*=(float scalar) -> Vector<size>&;
-        auto operator*(float scalar) -> Vector<size>;
+        auto operator*(float scalar) const -> Vector<size>;
         auto operator/=(float scalar) -> Vector<size>&;
-        auto operator/(float scalar) -> Vector<size>;
+        auto operator/(float scalar) const -> Vector<size>;
         template<std::size_t vec_size>
         friend auto operator<<(std::ostream& str, const Vector<vec_size>& vec) -> std::ostream&;
 
@@ -135,7 +129,7 @@ auto Vector<size>::operator*=(float scalar) -> Vector<size>&
 }
 
 template<std::size_t size>
-auto Vector<size>::operator*(float scalar) -> Vector<size>
+auto Vector<size>::operator*(float scalar) const -> Vector<size>
 {
     return Vector<size>{*this} *= scalar;
 }
@@ -147,7 +141,7 @@ auto Vector<size>::operator/=(float scalar) -> Vector<size>&
 }
 
 template<std::size_t size>
-auto Vector<size>::operator/(float scalar) -> Vector<size>
+auto Vector<size>::operator/(float scalar) const -> Vector<size>
 {
     return Vector<size>{*this}/=scalar;
 }
@@ -155,7 +149,7 @@ auto Vector<size>::operator/(float scalar) -> Vector<size>
 template<std::size_t size>
 auto Vector<size>::magnitude() const -> float
 {
-    float sumOfSquares;
+    float sumOfSquares{};
     for (std::size_t i{0}; i < size; ++i) {
         sumOfSquares += std::pow(at(i), 2.f);
     }
@@ -175,7 +169,7 @@ auto Vector<size>::normalize() -> Vector<size>&
 template<std::size_t size>
 auto Vector<size>::dot(const Vector<size>& rhs) const -> float
 {
-    float dotProduct;
+    float dotProduct{};
     for (std::size_t i{0}; i < size; ++i) {
         dotProduct += _coordinates[i]*rhs._coordinates[i];
     }

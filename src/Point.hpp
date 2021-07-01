@@ -12,24 +12,19 @@
 
 template<std::size_t size>
 class Vector;
+
 template<std::size_t size>
 class Point
 {
     public:
         Point<size>() = default;
-        explicit Point<size>(std::initializer_list<float> values);
-        ~Point<size>() = default;
-
-        Point<size>(const Point<size>& rhs) = default;
-        auto operator=(const Point<size>& rhs) -> Point<size>& = default;
-        Point<size>(Point<size>&& rhs) = default;
-        auto operator=(Point<size>&& rhs) -> Point<size>& = default;
+        Point<size>(std::initializer_list<float> values);
 
         auto operator==(const Point<size>& rhs) const -> bool;
         auto operator+(const Vector<size>& rhs) const -> Vector<size>;
-        auto operator-(const Point<size>& rhs) -> Vector<size>; 
+        auto operator-(const Point<size>& rhs) const -> Vector<size>; 
         auto operator-=(const Vector<size>& rhs) -> Point<size>&;
-        auto operator-(const Vector<size>& rhs) -> Point<size>;
+        auto operator-(const Vector<size>& rhs) const -> Point<size>;
         auto at(std::size_t position) const -> const float&;
         auto at(std::size_t position) -> float&;
 
@@ -73,7 +68,7 @@ auto Point<size>::operator+(const Vector<size>& rhs) const -> Vector<size>
 }
 
 template<std::size_t size>
-auto Point<size>::operator-(const Point<size>& rhs) -> Vector<size>
+auto Point<size>::operator-(const Point<size>& rhs) const -> Vector<size>
 {
     Vector<size> tmp;
     for (std::size_t i{0}; i < size; ++i) {
@@ -92,7 +87,7 @@ auto Point<size>::operator-=(const Vector<size>& rhs) -> Point<size>&
 }
 
 template<std::size_t size>
-auto Point<size>::operator-(const Vector<size>& rhs) -> Point<size>
+auto Point<size>::operator-(const Vector<size>& rhs) const -> Point<size>
 {
     return Point<size>{*this} -= rhs;
 }
