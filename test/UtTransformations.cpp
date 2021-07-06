@@ -27,7 +27,7 @@ TEST(transformations, inverse_of_translation_matrix_should_move_point_in_reverse
     auto transform = translation(5.f, -3.f, 2.f);
     auto p = Point4{-3.f, 4.f, 5.f, 1.f};
     auto translationResult = Point4{-8.f, 7.f, 3.f, 1.f};
-    ASSERT_EQ(transform.inverse()*p, translationResult);
+    ASSERT_EQ(inverse(transform)*p, translationResult);
 }
 
 TEST(transformations, translation_should_not_change_vector)
@@ -49,7 +49,7 @@ TEST(transformations, scaling)
     ASSERT_EQ(transform*v, scalingvResult);
 
     auto scalingByInversetResult = Vec4{-2.f, 2.f, 2.f, 0.f};
-    ASSERT_EQ(transform.inverse()*v, scalingByInversetResult);
+    ASSERT_EQ(inverse(transform)*v, scalingByInversetResult);
 }
 
 TEST(transformations, reflection)

@@ -5,13 +5,6 @@ Color::Color(float r, float g, float b) :
     _rgb{r,g,b}
 {}
 
-auto Color::operator==(const Color& rhs) const -> bool
-{
-    return relativelyEqual(r(), rhs.r()) &&
-           relativelyEqual(g(), rhs.g()) &&
-           relativelyEqual(b(), rhs.b());
-}
-
 auto Color::operator+=(const Color& rhs) -> Color&
 {
     _rgb[0] += rhs.r();

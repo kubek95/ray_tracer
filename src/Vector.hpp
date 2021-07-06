@@ -19,29 +19,65 @@ template<std::size_t size>
 class Vector
 {
     public:
-        Vector<size>() = default;
-        Vector<size>(std::initializer_list<float> values);
-    
-        auto operator==(const Vector<size>& rhs) const -> bool;
-        auto operator+=(const Vector<size>& rhs) -> Vector<size>&;
-        auto operator+(const Vector<size>& rhs) const -> Vector<size>;
-        auto operator+(const Point<size>& rhs) const -> Point<size>;
-        auto operator-=(const Vector<size>& rhs) -> Vector<size>&;
-        auto operator-(const Vector<size>& rhs) const -> Vector<size>;
-        auto operator-() -> Vector<size>;
-        auto operator*=(float scalar) -> Vector<size>&;
-        auto operator*(float scalar) const -> Vector<size>;
-        auto operator/=(float scalar) -> Vector<size>&;
-        auto operator/(float scalar) const -> Vector<size>;
-        template<std::size_t vec_size>
-        friend auto operator<<(std::ostream& str, const Vector<vec_size>& vec) -> std::ostream&;
+        constexpr Vector<size>() noexcept
+        {
+            static_assert(size <= 4, "Vector with size greater than 4 is not supported");
+        }
 
-        auto magnitude() const -> float;
-        auto normalize() -> Vector<size>&;
-        auto dot(const Vector<size>& rhs) const -> float;
+        constexpr Vector<size>(std::initializer_list<float> values):
+            Vector<size>{}
+        {
+            if(values.size() > size) {
+                throw std::runtime_error("Too many elements");
+            }
+            std::copy(values.begin(), values.end(), _coordinates.begin());
+        }
+    
+        auto& operator+=(const Vector<size>& rhs)
+        {
+            for (std::size_t i{0}; i < size; ++i) {
+                _coordinates[i] += rhs._coordinates[i];
+            }
+            return *this;
+        }
+
+        auto& operator-=(const Vector<size>& rhs)
+        {
+            for (std::size_t i{0}; i < size; ++i) {
+                _coordinates[i] -= rhs._coordinates[i];
+            }
+            return *this;
+        }
+
+        auto& operator*=(float scalar)
+        {
+            std::for_each(_coordinates.begin(), _coordinates.end(),
+                          [scalar](auto& el){ el*=scalar; });
+            return *this;
+        }
+
+        auto& operator/=(float scalar)
+        {
+            return *this *= 1/scalar;
+        }
+
+        auto& at(const std::size_t position) const
+        {
+            if (position >= size) {
+                throw std::runtime_error("Index out of bounds");
+            }
+            return _coordinates[position];
+        }
+
+        auto& at(std::size_t position)
+        {
+            if (position >= size) {
+                throw std::runtime_error("Index out of bounds");
+            }
+            return _coordinates[position];
+        }
+
         auto cross(const Vector<size>& rhs) -> Vector<size>&;
-        auto at(const std::size_t position) const -> const float&;
-        auto at(std::size_t position) -> float&;
 
     private:
         std::array<float, size> _coordinates{};
@@ -52,127 +88,94 @@ using Vec3 = Vector<3>;
 using Vec4 = Vector<4>;
 
 template<std::size_t size>
-Vector<size>::Vector(std::initializer_list<float> values)
+inline auto operator==(const Vector<size>& lhs, const Vector<size>& rhs)
 {
-    if(values.size() > size) {
-        throw std::runtime_error("Too many elements");
-    }
-    std::copy(values.begin(), values.end(), _coordinates.begin());
-}
-
-template<std::size_t size>
-auto Vector<size>::operator==(const Vector<size>& rhs) const -> bool
-{
-    bool result{true};
+    auto result = true;
     for (std::size_t i{0}; i < size; ++i) {
-        result &= relativelyEqual(_coordinates[i], rhs._coordinates[i]);
+        result &= relativelyEqual(lhs.at(i), rhs.at(i));
     }
     return result;
 }
 
 template<std::size_t size>
-auto Vector<size>::operator+=(const Vector<size>& rhs) -> Vector<size>&
+inline auto operator+(Vector<size> lhs, const Vector<size>& rhs)
 {
-    for (std::size_t i{0}; i < size; ++i) {
-        _coordinates[i] += rhs._coordinates[i];
-    }
-    return *this;
+    return lhs += rhs;
 }
 
 template<std::size_t size>
-auto Vector<size>::operator+(const Vector<size>& rhs) const -> Vector<size>
+inline auto operator+(const Vector<size>& lhs, Point<size> rhs)
 {
-    return Vector<size>{*this} += rhs;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator+(const Point<size>& rhs) const -> Point<size>
-{
-    Point<size> tmp;
     for(std::size_t i{0}; i < size; ++i) {
-        tmp.at(i) = at(i)+rhs.at(i);
+        rhs.at(i) += lhs.at(i);
     }
-    return tmp;
+    return rhs;
 }
 
 template<std::size_t size>
-auto Vector<size>::operator-=(const Vector<size>& rhs) -> Vector<size>&
+inline auto operator-(Vector<size> lhs, const Vector<size>& rhs)
 {
+    return lhs -= rhs;
+}
+
+template<std::size_t size>
+inline auto operator-(Vector<size> vec)
+{
+    for(std::size_t i{0}; i < size; ++i) {
+        vec.at(i) = -vec.at(i);
+    }
+    return vec;
+}
+
+template<std::size_t size>
+inline auto operator*(Vector<size> lhs, float scalar)
+{
+    return lhs *= scalar;
+}
+
+template<std::size_t size>
+inline auto operator/(Vector<size> lhs, float scalar)
+{
+    return lhs /= scalar;
+}
+
+template<std::size_t size>
+inline auto operator<<(std::ostream& str, const Vector<size>& vec) -> std::ostream&
+{
+    str << "[";
+    for (std::size_t i{0}; i < size-1; ++i) {
+        str << vec.at(i) << ",";
+    }
+    str << vec.at(size-1) << "]";
+    return str;
+}
+
+template<std::size_t size>
+inline auto magnitude(const Vector<size>& vec)
+{
+    auto sumOfSquares{0.f};
     for (std::size_t i{0}; i < size; ++i) {
-        _coordinates[i] -= rhs._coordinates[i];
+        sumOfSquares += std::pow(vec.at(i), 2.f);
     }
-    return *this;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator-(const Vector<size>& rhs) const -> Vector<size>
-{
-    return Vector<size>{*this} -= rhs;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator-() -> Vector<size>
-{
-    Vector<size> tmp{*this};
-    std::for_each(tmp._coordinates.begin(),
-                  tmp._coordinates.end(),
-                  [](auto& el){ el=-el; });
-    return tmp;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator*=(float scalar) -> Vector<size>&
-{
-    std::for_each(_coordinates.begin(), _coordinates.end(),
-                  [scalar](auto& el){ el*=scalar; });
-    return *this;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator*(float scalar) const -> Vector<size>
-{
-    return Vector<size>{*this} *= scalar;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator/=(float scalar) -> Vector<size>&
-{
-    return *this *= 1/scalar;
-}
-
-template<std::size_t size>
-auto Vector<size>::operator/(float scalar) const -> Vector<size>
-{
-    return Vector<size>{*this}/=scalar;
-}
-
-template<std::size_t size>
-auto Vector<size>::magnitude() const -> float
-{
-    const auto& sumSquares = [](const auto& acc, const auto& val)
-                             {return acc+std::pow(val, 2.f);};
-    auto sumOfSquares = std::accumulate(_coordinates.begin(),
-                                        _coordinates.end(),
-                                        0.f,
-                                        sumSquares);
     return std::sqrt(sumOfSquares);
 }
 
 template<std::size_t size>
-auto Vector<size>::normalize() -> Vector<size>&
+inline auto normalize(Vector<size> vec)
 {
-    const auto mag = magnitude();
-    std::for_each(_coordinates.begin(), _coordinates.end(),
-                  [mag](auto& el){el/=mag;});
-    return *this;
+    const auto mag = magnitude(vec);
+    for (std::size_t i{0}; i < size; ++i) {
+        vec.at(i) /= mag;
+    }
+    return vec;
 }
 
 template<std::size_t size>
-auto Vector<size>::dot(const Vector<size>& rhs) const -> float
+inline auto dotProduct(const Vector<size>& lhs, const Vector<size>& rhs)
 {
-    float dotProduct{};
+    auto dotProduct = 0.f;
     for (std::size_t i{0}; i < size; ++i) {
-        dotProduct += _coordinates[i]*rhs._coordinates[i];
+        dotProduct += lhs.at(i) * rhs.at(i);
     }
     return dotProduct;
 }
@@ -185,40 +188,11 @@ auto Vector<size>::cross(const Vector<size>& rhs) -> Vector<size>&
         throw std::runtime_error("implementation does not support cross product"
                                  "for vectors with size different than 3");
     }
-    const auto x{this->at(0)};
-    const auto y{this->at(1)};
-    const auto z{this->at(2)};
+    const auto x=this->at(0);
+    const auto y=this->at(1);
+    const auto z=this->at(2);
     _coordinates[0] = y*rhs.at(2) - z*rhs.at(1);
     _coordinates[1] = z*rhs.at(0) - x*rhs.at(2);
     _coordinates[2] = x*rhs.at(1) - y*rhs.at(0);
     return *this;
-}
-
-template<std::size_t size>
-auto Vector<size>::at(std::size_t position) const -> const float&
-{
-    if (position >= size) {
-        throw std::runtime_error("Index out of bounds");
-    }
-    return _coordinates[position];
-}
-
-template<std::size_t size>
-auto Vector<size>::at(const std::size_t position) -> float&
-{
-    if (position >= size) {
-        throw std::runtime_error("Index out of bounds");
-    }
-    return _coordinates[position];
-}
-
-template<std::size_t size>
-inline auto operator<<(std::ostream& str, const Vector<size>& vec) -> std::ostream&
-{
-    str << "[";
-    for (std::size_t i{0}; i < size-1; ++i) {
-        str << vec.at(i) << ",";
-    }
-    str << vec.at(size-1) << "]";
-    return str;
 }

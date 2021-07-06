@@ -1,5 +1,6 @@
 #include "Point.hpp"
 #include "Vector.hpp"
+#include "Utilities.hpp"
 #include "gtest/gtest.h"
 
 #include <cmath>
@@ -57,28 +58,28 @@ TEST(vector, should_support_magnitude_quantification)
     Vec3 v1{1.f,0.f,0.f};
     Vec3 v2{0.f,1.f,0.f};
     Vec3 v3{0.f,0.f,1.f};
-    ASSERT_EQ(v1.magnitude(), expected_magnitude);
-    ASSERT_EQ(v2.magnitude(), expected_magnitude);
-    ASSERT_EQ(v3.magnitude(), expected_magnitude);
+    ASSERT_EQ(magnitude(v1), expected_magnitude);
+    ASSERT_EQ(magnitude(v2), expected_magnitude);
+    ASSERT_EQ(magnitude(v3), expected_magnitude);
     expected_magnitude = std::sqrt(14.f);
     Vec3 v4{1.f,2.f,3.f};
     Vec3 v5{-1.f,-2.f,-3.f};
-    ASSERT_EQ(v4.magnitude(), expected_magnitude);
-    ASSERT_EQ(v5.magnitude(), expected_magnitude);
+    ASSERT_EQ(magnitude(v4), expected_magnitude);
+    ASSERT_EQ(magnitude(v5), expected_magnitude);
 }
 
 TEST(vector, should_support_normalization)
 {
     Vec3 v1{4.f, 0.f, 0.f};
     Vec3 expected_result{1.f, 0.f, 0.f};
-    ASSERT_EQ(v1.normalize(), expected_result);
+    ASSERT_EQ(normalize(v1), expected_result);
 
     Vec3 v2{1.f, 2.f, 3.f};
     expected_result = Vec3{1/std::sqrt(14.f), 2/std::sqrt(14.f), 3/std::sqrt(14.f)};
-    ASSERT_EQ(v2.normalize(), expected_result);
+    ASSERT_EQ(normalize(v2), expected_result);
 
-    ASSERT_EQ(v1.normalize().magnitude(), 1);
-    ASSERT_EQ(v2.normalize().magnitude(), 1);
+    ASSERT_EQ(magnitude(normalize(v1)), 1);
+    ASSERT_EQ(roundUp(magnitude(normalize(v2))), 1);
 }
 
 TEST(vector, should_support_dot_product)
@@ -86,7 +87,7 @@ TEST(vector, should_support_dot_product)
     Vec3 v1{1.f, 2.f, 3.f};
     Vec3 v2{2.f, 3.f, 4.f};
     const auto expected_result{20.f};
-    ASSERT_EQ(v1.dot(v2), expected_result);
+    ASSERT_EQ(dotProduct(v1, v2), expected_result);
 }
 
 TEST(vector, should_support_cross_product)

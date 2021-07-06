@@ -134,10 +134,8 @@ TEST(matrix, should_support_transposition)
                     2.f, 8.f, 8.f,
                     3.f, 0.f, 5.f};
     auto cpOfIdMatrix{matrix::identity4};
-    mat.transpose();
-    ASSERT_EQ(mat, transposed);
-    cpOfIdMatrix.transpose();
-    ASSERT_EQ(cpOfIdMatrix, matrix::identity4);
+    ASSERT_EQ(transpose(std::move(mat)), transposed);
+    ASSERT_EQ(transpose(std::move(cpOfIdMatrix)), matrix::identity4);
 }
 
 TEST(matrix, calculate_determinant_of_2D_matrix)
@@ -145,7 +143,7 @@ TEST(matrix, calculate_determinant_of_2D_matrix)
     Mat2 m{1.f, 5.f,
            -3.f, 2.f};
     const float expectedResult{17};
-    ASSERT_EQ(m.determinant(), expectedResult);
+    ASSERT_EQ(determinant(std::move(m)), expectedResult);
 }
 
 TEST(matrix, produce_submatrix)
@@ -155,7 +153,7 @@ TEST(matrix, produce_submatrix)
            0.f, 6.f, -3.f};
     Mat2 expectedResult{-3.f, 2.f,
                         0.f, 6.f};
-    ASSERT_EQ(m.submatrix(0,2), expectedResult);
+    ASSERT_EQ(submatrix(m,0,2), expectedResult);
     Mat4 m2{-6.f, 1.f, 1.f, 6.f,
             -8.f, 5.f, 8.f, 6.f,
             -1.f, 0.f, 8.f, 2.f,
@@ -163,7 +161,7 @@ TEST(matrix, produce_submatrix)
     Mat3 result{-6.f, 1.f, 6.f,
                 -8.f, 8.f, 6.f,
                 -7.f, -1.f, 1.f};
-    ASSERT_EQ(m2.submatrix(2,1), result);
+    ASSERT_EQ(submatrix(m2,2,1), result);
 }
 
 TEST(matrix, calculate_minor)
@@ -171,8 +169,8 @@ TEST(matrix, calculate_minor)
     Mat3 m{3.f, 5.f, 0.f,
            2.f, -1.f, -7.f,
            6.f, -1.f, 5.f};
-    const float minor{25};
-    ASSERT_EQ(m.minor(1,0), minor);
+    const float expectedMinor{25};
+    ASSERT_EQ(minor(m,1,0), expectedMinor);
 }
 
 TEST(matrix, calculate_cofactor)
@@ -180,28 +178,28 @@ TEST(matrix, calculate_cofactor)
     Mat3 m{3.f, 5.f, 0.f,
            2.f, -1.f, -7.f,
            6.f, -1.f, 5.f};
-    ASSERT_EQ(m.minor(0,0), -12);
-    ASSERT_EQ(m.cofactor(0,0), -12);
-    ASSERT_EQ(m.minor(1,0), 25);
-    ASSERT_EQ(m.cofactor(1,0), -25);
+    ASSERT_EQ(minor(m,0,0), -12);
+    ASSERT_EQ(cofactor(m,0,0), -12);
+    ASSERT_EQ(minor(m,1,0), 25);
+    ASSERT_EQ(cofactor(m,1,0), -25);
 
     Mat3 m2{1.f, 2.f, 6.f,
             -5.f, 8.f, -4.f,
             2.f, 6.f, 4.f};
-    ASSERT_EQ(m2.cofactor(0,0), 56);
-    ASSERT_EQ(m2.cofactor(0,1), 12);
-    ASSERT_EQ(m2.cofactor(0,2), -46);
-    ASSERT_EQ(m2.determinant(), -196);
+    ASSERT_EQ(cofactor(m2,0,0), 56);
+    ASSERT_EQ(cofactor(m2,0,1), 12);
+    ASSERT_EQ(cofactor(m2,0,2), -46);
+    ASSERT_EQ(determinant(std::move(m2)), -196);
 
     Mat4 m3{-2.f, -8.f, 3.f, 5.f,
             -3.f, 1.f, 7.f, 3.f,
             1.f, 2.f, -9.f, 6.f,
             -6.f, 7.f, 7.f, -9.f};
-    ASSERT_EQ(m3.cofactor(0,0), 690);
-    ASSERT_EQ(m3.cofactor(0,1), 447);
-    ASSERT_EQ(m3.cofactor(0,2), 210);
-    ASSERT_EQ(m3.cofactor(0,3), 51);
-    ASSERT_EQ(m3.determinant(), -4071);
+    ASSERT_EQ(cofactor(m3,0,0), 690);
+    ASSERT_EQ(cofactor(m3,0,1), 447);
+    ASSERT_EQ(cofactor(m3,0,2), 210);
+    ASSERT_EQ(cofactor(m3,0,3), 51);
+    ASSERT_EQ(determinant(std::move(m3)), -4071);
 }
 
 TEST(matrix, should_support_invertibility_testing)
@@ -210,12 +208,12 @@ TEST(matrix, should_support_invertibility_testing)
             5.f, 5.f, 7.f, 6.f,
             4.f, -9.f, 3.f, -7.f,
             9.f, 1.f, 7.f, -6.f};
-    ASSERT_TRUE(m1.isInvertible());
+    ASSERT_TRUE(isInvertible(m1));
     Mat4 m2{-4.f, 2.f, -2.f, -3.f,
             9.f, 6.f, 2.f, 6.f,
             0.f, -5.f, 1.f, -5.f,
             0.f, 0.f, 0.f, 0.f};
-    ASSERT_FALSE(m2.isInvertible());
+    ASSERT_FALSE(isInvertible(m2));
 }
 
 TEST(matrix, should_support_inverse_operation)
@@ -228,7 +226,7 @@ TEST(matrix, should_support_inverse_operation)
                         -0.80827f, -1.45676f, -0.44360f,  0.52068f,
                         -0.07894f, -0.22368f, -0.05263f,  0.19737f,
                         -0.52255f, -0.81390f, -0.30075f,  0.30640f};
-    m.inverse();
+    m = inverse(std::move(m));
     for (std::size_t x{0}; x < 4; ++x) {
        for (std::size_t y{0}; y < 4; ++y) {
            m.at(x, y) = std::ceil(m.at(x,y)*100000.f)/100000.f;
@@ -248,5 +246,3 @@ TEST(matrix, should_support_inverse_operation)
 //    m2.inverse();
 //    ASSERT_EQ(multi*m2, m1);
 }
-
-

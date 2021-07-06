@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
-#include <limits>
 #include <stdexcept>
 #include <ostream>
 
@@ -17,19 +16,43 @@ template<std::size_t size>
 class Point
 {
     public:
-        Point<size>() = default;
-        Point<size>(std::initializer_list<float> values);
+        constexpr Point<size>() noexcept
+        {
+            static_assert(size <= 4, "Point with size greater than 4 is not supported");
+        }
 
-        auto operator==(const Point<size>& rhs) const -> bool;
-        auto operator+(const Vector<size>& rhs) const -> Vector<size>;
-        auto operator-(const Point<size>& rhs) const -> Vector<size>; 
-        auto operator-=(const Vector<size>& rhs) -> Point<size>&;
-        auto operator-(const Vector<size>& rhs) const -> Point<size>;
-        auto at(std::size_t position) const -> const float&;
-        auto at(std::size_t position) -> float&;
+        constexpr Point<size>(std::initializer_list<float> values) :
+            Point<size>()
+        {
+            if (values.size() > size) {
+                throw std::runtime_error("Too many elements");
+            }
+            std::copy(values.begin(), values.end(), _coordinates.begin());
+        }
 
-        template<std::size_t p_size>
-        friend auto operator<<(std::ostream& ost, const Point<p_size>& p) -> std::ostream&;
+        auto& operator-=(const Vector<size>& rhs)
+        {
+            for (std::size_t i{0}; i < size; ++i) {
+                _coordinates[i] -= rhs.at(i);
+            }
+            return *this;
+        }
+
+        auto& at(std::size_t position) const
+        {
+            if (position >= size) {
+                throw std::runtime_error("Index if out of bounds");
+            }
+            return _coordinates[position];
+        }
+        
+        auto& at(std::size_t position)
+        {
+            if (position >= size) {
+                throw std::runtime_error("Index if out of bounds");
+            }
+            return _coordinates[position];
+        }
 
     private:
         std::array<float, size> _coordinates{};
@@ -40,75 +63,39 @@ using Point3 = Point<3>;
 using Point4 = Point<4>;
 
 template<std::size_t size>
-Point<size>::Point(std::initializer_list<float> values)
+inline auto operator==(const Point<size>& lhs, const Point<size>& rhs)
 {
-    if (values.size() > size) {
-        throw std::runtime_error("Too many elements");
-    }
-    std::copy(values.begin(), values.end(), _coordinates.begin());
-}
-
-template<std::size_t size>
-auto Point<size>::operator==(const Point<size>& rhs) const -> bool
-{
-    bool result{true};
+    auto result = true;
     for (std::size_t i{0}; i < size; ++i) {
-        result &= relativelyEqual(at(i), rhs.at(i));
+        result &= relativelyEqual(lhs.at(i), rhs.at(i));
     }
     return result;
 }
 
 template<std::size_t size>
-auto Point<size>::operator+(const Vector<size>& rhs) const -> Vector<size>
+inline auto operator+(const Point<size>& lhs, const Vector<size>& rhs)
 {
     Vector<size> tmp;
     for (std::size_t i{0}; i < size; ++i) {
-        tmp.at(i) = rhs.at(i) + at(i);
+        tmp.at(i) = rhs.at(i) + lhs.at(i);
     }
     return tmp;
 }
 
 template<std::size_t size>
-auto Point<size>::operator-(const Point<size>& rhs) const -> Vector<size>
+inline auto operator-(const Point<size>& lhs, const Point<size>& rhs)
 {
     Vector<size> tmp;
     for (std::size_t i{0}; i < size; ++i) {
-        tmp.at(i) = at(i) - rhs.at(i);
+        tmp.at(i) = lhs.at(i) - rhs.at(i);
     }
     return tmp;
 }
 
 template<std::size_t size>
-auto Point<size>::operator-=(const Vector<size>& rhs) -> Point<size>&
+inline auto operator-(Point<size> lhs, const Vector<size>& rhs)
 {
-    for (std::size_t i{0}; i < size; ++i) {
-        _coordinates[i] -= rhs.at(i);
-    }
-    return *this;
-}
-
-template<std::size_t size>
-auto Point<size>::operator-(const Vector<size>& rhs) const -> Point<size>
-{
-    return Point<size>{*this} -= rhs;
-}
-
-template<std::size_t size>
-auto Point<size>::at(std::size_t position) const -> const float&
-{
-    if (position >= size) {
-        throw std::runtime_error("Index if out of bounds");
-    }
-    return _coordinates[position];
-}
-
-template<std::size_t size>
-auto Point<size>::at(std::size_t position) -> float&
-{
-    if (position >= size) {
-        throw std::runtime_error("Index if out of bounds");
-    }
-    return _coordinates[position];
+    return lhs -= rhs;
 }
 
 template<std::size_t size>
